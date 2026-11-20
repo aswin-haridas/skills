@@ -1,0 +1,7 @@
+{
+  "name": "ux-skills",
+  "version": "1.0.0",
+  "description": "Tasteful animations/micro-interactions (animate-this-app) and a Laws of UX audit (check-user-experience) for any project.",
+  "author": { "name": "aswin-haridas" },
+  "license": "MIT"
+}

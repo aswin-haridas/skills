@@ -1,0 +1,11 @@
+{
+  "name": "aswin-haridas-skills",
+  "owner": { "name": "aswin-haridas" },
+  "plugins": [
+    {
+      "name": "ux-skills",
+      "source": "./",
+      "description": "animate-this-app + check-user-experience"
+    }
+  ]
+}
