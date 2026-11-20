@@ -1,6 +1,6 @@
 ---
 name: animate-this-app
-description: Add tasteful, industry-standard animations and micro-interactions to an existing project without changing its look, voice or personality. Applies Disney's 12 animation principles adapted for UI, UX laws (Fitts, Hick, Miller, Doherty, Postel, Jakob, frequency of use) and proven CSS/motion techniques (0.97 press scale, error shake, directional stepper slides, interpolate-size accordions, springs, rubber-band drag, tooltip delay grouping, reduced-motion support). Use when the user says "animate this app", "/animate-this-app", "add micro-interactions", "add motion", "make it feel alive/polished/responsive", "add transitions", or asks to improve how an existing UI feels. Works with plain HTML/CSS, Tailwind, React, Next.js, Vue, Svelte, Angular, React Native and Flutter.
+description: Add tasteful, industry-standard animations and micro-interactions to an existing project without changing its look, voice or personality. Motion must earn its place (orientation, feedback, focus, continuity) within a strict motion budget and frequency-of-use rule. Applies Disney's 12 animation principles adapted for UI, UX laws (Fitts, Hick, Miller, Doherty, Postel, Jakob, frequency of use) and proven CSS/motion techniques (0.97 press scale, error shake, directional stepper slides, interpolate-size accordions, springs, rubber-band drag, tooltip delay grouping, reduced-motion support). Use when the user says "animate this app", "/animate-this-app", "add micro-interactions", "add motion", "make it feel alive/polished/responsive", "add transitions", or asks to improve how an existing UI feels. Works with plain HTML/CSS, Tailwind, React, Next.js, Vue, Svelte, Angular, React Native and Flutter.
 ---
 
 # Animate This App
@@ -10,10 +10,23 @@ Add motion that makes an existing app feel responsive, physical and polished, wh
 ## Golden rules
 
 1. **Preserve the soul.** Never change colors, fonts, layout, spacing, copy or component structure to fit an animation. Motion adapts to the app, not the other way round.
-2. **Motion must have a purpose.** Every animation guides attention, shows a spatial relationship, or confirms a state change. If it only decorates and costs speed, cut it.
+2. **Motion must earn its place.** Every animation must pass at least one test, or stay static:
+   - **Orientation:** shows where something came from or went.
+   - **Feedback:** confirms an action happened (press, toggle, save, copy, error).
+   - **Focus:** directs attention to the one thing that matters right now.
+   - **Continuity:** hides a jarring jump (layout shift, content swap, route change).
+
+   Decorative-only motion fails. Looping, bouncing, pulsing and parallax fail unless the user asked for them.
 3. **Reuse before adding.** Use the motion library already installed (Framer Motion/Motion, GSAP, react-spring, Vue `<Transition>`, Svelte transitions, Angular animations, Reanimated, Flutter implicit animations). With none installed, use plain CSS. Don't add a dependency unless springs or gestures truly need one, and ask first.
 4. **Less is more.** Frequent actions get the least motion. Ten subtle touches beat one show-off effect.
 5. **Never break function.** No animation may delay input, hide content, shift layout, or block a click.
+
+## Motion budget
+
+- At most **one** primary animated thing on screen at a time. Stagger or sequence the rest.
+- At most **3 distinct animation styles** across the whole app (for example fade+rise for entrances, scale for press, slide for panels). Consistency reads as quality.
+- Everything shares one set of duration and easing tokens. No one-off values.
+- If a screen would have more than about 5 elements moving at once, cut until it has fewer.
 
 ## Workflow
 
@@ -35,7 +48,7 @@ When unsure, choose the calmer profile.
 
 ### 2. Plan, then confirm
 
-Produce a short plan of the specific places to animate, grouped by priority (see the checklist below), with the file for each. For a large app, confirm scope with the user before editing. For a small app, or when the user said "just do it", proceed.
+Audit first, edit nothing yet. Classify every candidate by frequency of use (see the frequency rule below), then produce a short plan as a table: `Location | Change | Principle | Duration/easing`, grouped by priority (see the checklist below). Aim for 8–15 high-impact items for a whole app, fewer for a small one. Explicitly list what you chose **not** to animate and why. For a large app, confirm scope with the user before editing. For a small app, or when the user said "just do it", proceed.
 
 ### 3. Add the motion foundation once
 
@@ -75,7 +88,9 @@ Go through it in priority order. Skip anything the app doesn't have.
 - Run the app and use the changed flows (use the browser preview if available). Check that nothing jumps, flickers or delays input.
 - Toggle reduced motion (emulate `prefers-reduced-motion: reduce`) and confirm content still appears and works.
 - Check theme switching does not trigger a transition storm.
-- Report a short list of what was animated and where, and what was deliberately left still.
+- Confirm every animation passes the "earn its place" tests and fits the motion budget.
+- **Removal test:** if removing any single animation would not make the app feel worse, remove it.
+- Report briefly: what changed (location + principle), what was deliberately left static and why, which tokens were added and where, and how reduced motion is handled.
 
 ## Checklist (priority order)
 
@@ -166,7 +181,18 @@ Go through it in priority order. Skip anything the app doesn't have.
 - **Never `transition: all`.** List the properties.
 - **`will-change`** only on elements about to animate, never globally.
 - **Reduced motion is mandatory.** Replace movement with an opacity fade or nothing; keep state changes visible.
-- **Frequency of use:** the more often an action happens (typing, tab switching, a command palette, list navigation), the less it should move. Near-instant is correct for power-user paths.
+- **Frequency rule (the most important restraint):** the more often something is used, the less it moves.
+
+  | Frequency | Examples | Motion |
+  |---|---|---|
+  | High (many times per session) | typing, keyboard shortcuts, command palette, tab switches, list toggles, table hover, sidebar nav | None or instant (under 100 ms), never blocks input |
+  | Medium | menus, modals, drawers, route changes, form submit | Subtle, 160–320 ms |
+  | Rare | onboarding, first success, milestones, completion screens | May be expressive, still tasteful |
+
+  If unsure, choose the quieter option.
+- **Restraint per principle:** anticipation only for rare or destructive actions; overshoot at most about 10% and only on small confirmatory elements (checkmarks, toggle thumbs, badges), never on panels, pages or lists; at most one secondary action per primary action; on validation errors, highlight the first invalid field only.
+- **Stagger cap:** never stagger more than about 6–8 items, and keep total stagger under about 200 ms.
+- **No replays:** animations must not replay on re-render or data refresh.
 - **No layout shift.** Reserve space before content animates in.
 - **Interruptible.** Hover and toggle animations must reverse cleanly mid-flight. Prefer CSS transitions or springs over fixed keyframes for these.
 
